@@ -1,0 +1,8 @@
+[package]
+name = "ironweb"
+version = "0.1.0"
+authors = ["Bourgond Aries <macocio@gmail.com>"]
+
+[dependencies]
+iron = "0.3.0"
+router = "0.1.1"
