@@ -8,19 +8,19 @@ extern crate iron;
 extern crate maud;
 extern crate rand;
 extern crate router;
+extern crate urlencoded;
 
 mod index;
 mod models;
+mod routing;
 mod schema;
 
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use iron::prelude::*;
-use router::Router;
-use self::index::fileloader::*;
-use self::index::frontpage::*;
 use self::models::*;
+use self::routing::setup_router;
 use std::env;
 
 pub fn create_post<'a>(conn: &PgConnection, title: &'a str, body: &'a str) -> Post {
@@ -36,7 +36,6 @@ pub fn create_post<'a>(conn: &PgConnection, title: &'a str, body: &'a str) -> Po
 		.expect("Can't save new post")
 }
 
-
 pub fn establish_connection() -> PgConnection {
 	dotenv().ok();
 
@@ -44,13 +43,6 @@ pub fn establish_connection() -> PgConnection {
 		.expect("DATABASE_URL must be set in the .env");
 	PgConnection::establish(&database_url)
 		.expect(&format!("Error connecting to {}", database_url))
-}
-
-fn setup_router() -> Router {
-	let mut router = Router::new();
-	router.get("/", handler);
-	router.get("/storage/:filename", file_handler);
-	router
 }
 
 fn generate_big_random() -> i64 {

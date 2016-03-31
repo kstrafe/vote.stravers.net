@@ -1,35 +1,26 @@
 use iron::mime::*;
 use iron::prelude::*;
 use iron::status;
-use router::Router;
+use maud::PreEscaped;
+use super::{html_response, generate_header};
 
-pub fn handler(_req: &mut Request) -> IronResult<Response> {
-	/*let ref query = req.extensions.get::<Router>()
-		.unwrap()
-		.find("query")
-		.unwrap_or("/");
-	*/
+pub fn frontpage(_: &mut Request) -> IronResult<Response> {
 	let name = "Lyra";
 	let mut buffer = String::new();
+	let header = generate_header();
 	html!(buffer, {
 		html {
-			head {
-				style { r#"@import url()"# }
-				link rel="icon" type="image/png" href="/storage/favicon48x48.png" /
-			}
+			^PreEscaped(header)
 			body {
 				h1 "Pinkie's Brew"
+				form action="/createpoll" method="post" {
+					input name="description" type="text" placeholder="description" /
+					input name="options" type="text" placeholder="comma-separated options" /
+					input type="submit" /
+				}
 				p { "Hi! " ^name "!" }
 			}
 		}
 	}).unwrap();
 	Ok(html_response(buffer))
-}
-
-fn html_response(content: String) -> Response {
-	Response::with((
-		Mime(TopLevel::Text, SubLevel::Html, vec![]),
-		status::Ok,
-		content
-	))
 }
