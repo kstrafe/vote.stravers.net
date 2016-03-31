@@ -4,12 +4,14 @@ version = "0.1.0"
 authors = ["Bourgond Aries <macocio@gmail.com>"]
 
 [dependencies]
+chrono = "0.2.21"
 clippy = "0.0.58"
-diesel = "0.5.3"
-diesel_codegen = { version = "0.5.3", default-features = false, features = ["nightly", "postgres"] }
+diesel = { version = "0.5.3", features = ["chrono"] }
+diesel_codegen = { git = "https://github.com/sgrif/diesel.git", default-features = false, features = ["nightly", "postgres"] }
 dotenv = "0.8.0"
 dotenv_macros = "0.8.0"
 iron = "0.3.0"
 maud = "0.8.0"
 maud_macros = "0.8.0"
+rand = "0.3.14"
 router = "0.1.1"

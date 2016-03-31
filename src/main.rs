@@ -1,10 +1,12 @@
 #![feature(custom_attribute, custom_derive, plugin)]
 #![plugin(clippy, diesel_codegen, dotenv_macros, maud_macros)]
+extern crate chrono;
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
 extern crate iron;
 extern crate maud;
+extern crate rand;
 extern crate router;
 
 mod index;
@@ -16,7 +18,8 @@ use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use iron::prelude::*;
 use router::Router;
-use self::index::*;
+use self::index::fileloader::*;
+use self::index::frontpage::*;
 use self::models::*;
 use std::env;
 
@@ -33,6 +36,7 @@ pub fn create_post<'a>(conn: &PgConnection, title: &'a str, body: &'a str) -> Po
 		.expect("Can't save new post")
 }
 
+
 pub fn establish_connection() -> PgConnection {
 	dotenv().ok();
 
@@ -45,8 +49,31 @@ pub fn establish_connection() -> PgConnection {
 fn setup_router() -> Router {
 	let mut router = Router::new();
 	router.get("/", handler);
-	router.get("/storage/:filename", image);
+	router.get("/storage/:filename", file_handler);
 	router
+}
+
+fn generate_big_random() -> i64 {
+	rand::random::<i64>()
+}
+
+pub fn create_poll(conn: &PgConnection, description: &str) -> Option<Poll> {
+	use diesel::result::Error::DatabaseError;
+	use schema::poll;
+
+	for _ in 1..1000 {
+		let new_poll = NewPoll {
+			id: generate_big_random(),
+			description: description,
+		};
+		let results = diesel::insert(&new_poll).into(poll::table).get_result(conn);
+		match results {
+			Ok(poll) => return Some(poll),
+			Err(DatabaseError(_)) => {}
+			_ => return None,
+		}
+	}
+	None
 }
 
 fn main() {
@@ -55,6 +82,7 @@ fn main() {
 	let con = establish_connection();
 
 	create_post(&con, "Hello world", "Today is a good day!");
+	create_poll(&con, "Vote!");
 
 	let res = posts
 		.limit(5)

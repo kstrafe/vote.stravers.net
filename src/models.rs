@@ -1,4 +1,5 @@
-use super::schema::posts;
+use super::schema::*;
+use chrono::naive::date::NaiveDate;
 
 #[derive(Queryable)]
 pub struct Post {
@@ -8,11 +9,35 @@ pub struct Post {
 	pub published: bool,
 }
 
-//#[derive(Queryable)]
-// pub struct
+#[derive(Queryable)]
+pub struct Poll {
+	pub id: i64,
+	pub description: Option<String>,
+	pub creation: NaiveDate,
+}
+
+#[derive(Queryable)]
+pub struct Candidate {
+	pub id: i64,
+	pub poll_id: i64,
+	pub name: String,
+}
+
+#[derive(Queryable)]
+pub struct Vote {
+	candidate_id: i64,
+	poll_id: i64,
+	voter_id: i64,
+}
 
 #[insertable_into(posts)]
 pub struct NewPost<'a> {
 	pub title: &'a str,
 	pub body: &'a str,
+}
+
+#[insertable_into(poll)]
+pub struct NewPoll<'a> {
+	pub id: i64,
+	pub description: &'a str,
 }
