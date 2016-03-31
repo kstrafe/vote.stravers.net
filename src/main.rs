@@ -4,7 +4,7 @@ extern crate iron;
 extern crate maud;
 extern crate router;
 
-use iron::headers::{ContentType, Headers};
+use iron::mime::*;
 use iron::prelude::*;
 use iron::status;
 use router::Router;
@@ -27,17 +27,19 @@ fn main() {
 		.unwrap();
 }
 
-
-fn handler(req: &mut Request) -> IronResult<Response> {
-	let ref query = req.extensions.get::<Router>()
+fn handler(_req: &mut Request) -> IronResult<Response> {
+	/*let ref query = req.extensions.get::<Router>()
 		.unwrap()
 		.find("query")
 		.unwrap_or("/");
+	*/
 	let name = "Lyra";
 	let mut buffer = String::new();
 	html!(buffer, {
 		html {
 			head {
+				style { r#"@import url()"# }
+				link rel="icon" type="image/png" href="/storage/favicon48x48.png" /
 			}
 			body {
 				h1 "Pinkie's Brew"
@@ -49,15 +51,12 @@ fn handler(req: &mut Request) -> IronResult<Response> {
 }
 
 fn html_response(content: String) -> Response {
-	let mut headers = Headers::new();
-	headers.set(ContentType::html());
-	let mut response = Response::with((
-		status::Ok, content));
-	response.headers = headers;
-	response
+	Response::with((
+		Mime(TopLevel::Text, SubLevel::Html, vec![]),
+		status::Ok,
+		content
+	))
 }
-
-
 
 #[cfg(test)]
 mod tests {
