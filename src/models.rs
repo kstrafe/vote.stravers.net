@@ -8,6 +8,9 @@ pub struct Post {
 	pub published: bool,
 }
 
+//#[derive(Queryable)]
+// pub struct
+
 #[insertable_into(posts)]
 pub struct NewPost<'a> {
 	pub title: &'a str,
