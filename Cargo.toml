@@ -5,4 +5,6 @@ authors = ["Bourgond Aries <macocio@gmail.com>"]
 
 [dependencies]
 iron = "0.3.0"
+maud = "0.8.0"
+maud_macros = "0.8.0"
 router = "0.1.1"
