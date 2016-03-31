@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Bourgond Aries <macocio@gmail.com>"]
 
 [dependencies]
+clippy = "0.0.58"
 diesel = "0.5.3"
 diesel_codegen = { version = "0.5.3", default-features = false, features = ["nightly", "postgres"] }
 dotenv = "0.8.0"

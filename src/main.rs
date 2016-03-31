@@ -1,5 +1,5 @@
-#![feature(custom_derive, custom_attribute, plugin)]
-#![plugin(diesel_codegen, dotenv_macros, maud_macros)]
+#![feature(custom_attribute, custom_derive, plugin)]
+#![plugin(clippy, diesel_codegen, dotenv_macros, maud_macros)]
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
@@ -7,17 +7,17 @@ extern crate iron;
 extern crate maud;
 extern crate router;
 
+mod index;
 mod models;
 mod schema;
 
-use self::models::*;
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
 use dotenv::dotenv;
-use iron::mime::*;
 use iron::prelude::*;
-use iron::status;
 use router::Router;
+use self::index::*;
+use self::models::*;
 use std::env;
 
 pub fn create_post<'a>(conn: &PgConnection, title: &'a str, body: &'a str) -> Post {
@@ -45,7 +45,7 @@ pub fn establish_connection() -> PgConnection {
 fn setup_router() -> Router {
 	let mut router = Router::new();
 	router.get("/", handler);
-	router.get("/:query", handler);
+	router.get("/storage/:filename", image);
 	router
 }
 
@@ -70,42 +70,4 @@ fn main() {
 	Iron::new(router)
 		.http("localhost:3000")
 		.unwrap();
-}
-
-fn handler(_req: &mut Request) -> IronResult<Response> {
-	/*let ref query = req.extensions.get::<Router>()
-		.unwrap()
-		.find("query")
-		.unwrap_or("/");
-	*/
-	let name = "Lyra";
-	let mut buffer = String::new();
-	html!(buffer, {
-		html {
-			head {
-				style { r#"@import url()"# }
-				link rel="icon" type="image/png" href="/storage/favicon48x48.png" /
-			}
-			body {
-				h1 "Pinkie's Brew"
-				p { "Hi! " ^name "!" }
-			}
-		}
-	}).unwrap();
-	Ok(html_response(buffer))
-}
-
-fn html_response(content: String) -> Response {
-	Response::with((
-		Mime(TopLevel::Text, SubLevel::Html, vec![]),
-		status::Ok,
-		content
-	))
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-    }
 }
