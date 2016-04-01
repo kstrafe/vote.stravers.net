@@ -8,8 +8,7 @@ use ::models::*;
 use rand;
 use router::Router;
 use std::io::Read;
-use super::{html_redirect, html_response};
-use super::createpoll::radix_36_to_radix_10;
+use super::{radix_36_to_radix_10, html_redirect, html_response};
 use urlencoded::UrlEncodedBody;
 
 pub fn see_poll(req: &mut Request) -> IronResult<Response> {

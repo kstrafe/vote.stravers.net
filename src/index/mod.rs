@@ -23,7 +23,7 @@ fn html_redirect(content: String) -> Response {
 	))
 }
 
-fn html_response(content: String) -> Response {
+pub fn html_response(content: String) -> Response {
 	Response::with((
 		Mime(TopLevel::Text, SubLevel::Html, vec![]),
 		status::Ok,
@@ -42,6 +42,16 @@ fn generate_header() -> String {
 	buffer
 }
 
+
+fn find(code: &[u8], value: u8) -> usize {
+	for i in 0..code.len() {
+		if code[i] == value {
+			return i;
+		}
+	}
+	panic!("Invalid base provided");
+}
+
 pub fn establish_connection() -> PgConnection {
 	dotenv().ok();
 
@@ -50,3 +60,19 @@ pub fn establish_connection() -> PgConnection {
 	PgConnection::establish(&database_url)
 		.expect(&format!("Error connecting to {}", database_url))
 }
+
+pub fn radix_36_to_radix_10(mut text: &str) -> i64 {
+	let mut num: i64 = 0;
+	let j = text.len();
+	let code = b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
+	let uref: &[u8] = text.as_ref();
+	for i in 0..j {
+		println!("Index: {}", uref.len()-1-i);
+		let temp = find(code, uref[uref.len() - 1 - i]) as usize
+			* code.len().pow(i as u32);
+		num += temp as i64;
+	}
+	num
+}
+
+

@@ -8,7 +8,7 @@ use ::models::*;
 use ::schema;
 use rand;
 use std::io::Read;
-use super::{html_redirect, html_response};
+use super::{radix_36_to_radix_10, html_redirect, html_response};
 use urlencoded::UrlEncodedBody;
 
 fn back_to_start() -> IronResult<Response> {
@@ -19,28 +19,6 @@ fn continue_to_poll(id: i64) -> IronResult<Response> {
 	println!("Serializing {}", id);
 	let number = i64_to_str_radix_36(id);
 	Ok(html_redirect(String::from("/") + &number))
-}
-
-fn find(code: &[u8], value: u8) -> usize {
-	for i in 0..code.len() {
-		if code[i] == value {
-			return i;
-		}
-	}
-	panic!("Invalid base provided");
-}
-pub fn radix_36_to_radix_10(mut text: &str) -> i64 {
-	let mut num: i64 = 0;
-	let j = text.len();
-	let code = b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
-	let uref: &[u8] = text.as_ref();
-	for i in 0..j {
-		println!("Index: {}", uref.len()-1-i);
-		let temp = find(code, uref[uref.len() - 1 - i]) as usize
-			* code.len().pow(i as u32);
-		num += temp as i64;
-	}
-	num
 }
 
 fn i64_to_str_radix_36(mut num: i64) -> String {
