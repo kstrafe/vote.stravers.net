@@ -21,6 +21,13 @@ pub struct Candidate {
 	pub id: i64,
 	pub poll_id: i64,
 	pub name: String,
+	pub creation: NaiveDate,
+}
+
+#[insertable_into(candidate)]
+pub struct NewCandidate<'a> {
+	pub poll_id: i64,
+	pub name: &'a str,
 }
 
 #[derive(Queryable)]

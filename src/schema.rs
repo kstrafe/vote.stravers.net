@@ -1,5 +1,5 @@
-infer_table_from_schema!(dotenv!("DATABASE_URL"), "candidate");
 infer_table_from_schema!(dotenv!("DATABASE_URL"), "poll");
+infer_table_from_schema!(dotenv!("DATABASE_URL"), "candidate");
 infer_table_from_schema!(dotenv!("DATABASE_URL"), "posts");
 table!(
 	vote(voter_id) {

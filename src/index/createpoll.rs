@@ -5,6 +5,7 @@ use iron::mime::*;
 use iron::prelude::*;
 use iron::status;
 use ::models::*;
+use ::schema;
 use rand;
 use std::io::Read;
 use super::{html_redirect, html_response};
@@ -38,7 +39,6 @@ pub fn radix_36_to_radix_10(mut text: &str) -> i64 {
 		let temp = find(code, uref[uref.len() - 1 - i]) as usize
 			* code.len().pow(i as u32);
 		num += temp as i64;
-		// text = text.substring(0,text.length()-1);
 	}
 	num
 }
@@ -72,7 +72,11 @@ pub fn create_poll(req: &mut Request) -> IronResult<Response> {
 			return back_to_start();
 		} else {
 			let con = super::establish_connection();
-			if let Some(poll) = make_poll(&con, &binding.get("description").unwrap()[0]) {
+			if let Some(poll) = make_poll(&con,
+				&binding.get("description")
+					.unwrap(),
+				&binding.get("options")
+					.unwrap()) {
 				return continue_to_poll(poll.id);
 			}
 		}
@@ -82,7 +86,7 @@ pub fn create_poll(req: &mut Request) -> IronResult<Response> {
 	back_to_start()
 }
 
-fn make_poll(conn: &PgConnection, description: &str) -> Option<Poll> {
+fn make_poll(conn: &PgConnection, description: &Vec<String>, options: &Vec<String>) -> Option<Poll> {
 	use diesel::result::Error::DatabaseError;
 	use schema::poll;
 
@@ -96,11 +100,21 @@ fn make_poll(conn: &PgConnection, description: &str) -> Option<Poll> {
 	for _ in 1..1000 {
 		let new_poll = NewPoll {
 			id: generate_big_random(),
-			description: description,
+			description: &description[0],
 		};
-		let results = diesel::insert(&new_poll).into(poll::table).get_result(conn);
+		let results: Result<Poll, _> = diesel::insert(&new_poll).into(poll::table).get_result(conn);
 		match results {
-			Ok(poll) => return Some(poll),
+			Ok(poll) => {
+				for i in options[0].split(",") {
+					let id = poll.id;
+					let res: Candidate = diesel::insert(
+						&NewCandidate {
+							poll_id: id,
+							name: i,
+						}).into(::schema::candidate::table).get_result(conn).expect("oki");
+				}
+				return Some(poll);
+			}
 			Err(DatabaseError(_)) => {}
 			_ => return None,
 		}
