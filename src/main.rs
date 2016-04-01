@@ -16,12 +16,9 @@ mod routing;
 mod schema;
 
 use diesel::prelude::*;
-use diesel::pg::PgConnection;
-use dotenv::dotenv;
 use iron::prelude::*;
 use self::models::*;
 use self::routing::setup_router;
-use std::env;
 
 fn main() {
 	use schema::posts::dsl::*;

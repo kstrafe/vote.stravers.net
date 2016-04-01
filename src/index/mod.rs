@@ -2,6 +2,7 @@ pub mod createpoll;
 pub mod fileloader;
 pub mod frontpage;
 pub mod vote;
+pub mod poll;
 
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
