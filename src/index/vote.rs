@@ -16,27 +16,13 @@ fn get_choices(pid: i64) -> Vec<Candidate> {
 		.expect("Could not load candidates!")
 }
 
-fn get_poll_description(pid: i64) -> String {
-	use ::schema::poll::dsl::*;
-	let con = &establish_connection();
-	let elem = &poll
-		.filter(id.eq(pid))
-		.load::<Poll>(con)
-		.expect("Could not load candidates!")
-		[0];
-	match elem.description {
-		Some(ref string) => return string.clone(),
-		None => return String::from("No Description"),
-	}
-}
-
 pub fn vote_handler(req: &mut Request) -> IronResult<Response> {
-	let pollid = req.extensions.get::<Router>()
+	let radix = req.extensions.get::<Router>()
 		.unwrap()
 		.find("value")
 		.unwrap_or("0");
-	let pollid = radix_36_to_radix_10(&pollid);
-	println!("vote handler pol id: {}", pollid);
+	let pollid = radix_36_to_radix_10(&radix);
+	println!("vote handler pol id: {}", radix);
 	let choices = get_choices(pollid);
 	let size = choices.len();
 
@@ -52,8 +38,9 @@ pub fn vote_handler(req: &mut Request) -> IronResult<Response> {
 				h1 "here are your choices!"
 				^size
 				form action="/votefor" method="post" {
+					input name="identifier" type="hidden" value=^radix
 					@ for i in choices {
-						input value=^i.name type="submit" /
+						input name="candname" value=^i.name type="submit" /
 					}
 				}
 				p { "Amethyst vs Pearl" }

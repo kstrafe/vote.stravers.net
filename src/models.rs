@@ -32,9 +32,17 @@ pub struct NewCandidate<'a> {
 
 #[derive(Queryable)]
 pub struct Vote {
-	candidate_id: i64,
-	poll_id: i64,
-	voter_id: i64,
+	pub candidate_id: i64,
+	pub poll_id: i64,
+	pub voter_id: i64,
+	pub creation: NaiveDate,
+}
+
+#[insertable_into(vote)]
+pub struct NewVote {
+	pub candidate_id: i64,
+	pub poll_id: i64,
+	pub voter_id: i64,
 }
 
 #[insertable_into(posts)]

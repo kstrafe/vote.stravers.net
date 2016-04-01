@@ -11,7 +11,7 @@ use std::io::Read;
 use super::{radix_36_to_radix_10, html_redirect, html_response};
 use urlencoded::UrlEncodedBody;
 
-fn back_to_start() -> IronResult<Response> {
+pub fn back_to_start() -> IronResult<Response> {
 	Ok(html_redirect("".into()))
 }
 

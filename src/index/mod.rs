@@ -2,6 +2,7 @@ pub mod createpoll;
 pub mod fileloader;
 pub mod frontpage;
 pub mod vote;
+pub mod stats;
 pub mod poll;
 
 use diesel::prelude::*;
@@ -29,6 +30,22 @@ pub fn html_response(content: String) -> Response {
 		status::Ok,
 		content
 	))
+}
+
+pub fn get_poll_description(pid: i64) -> String {
+	use ::models::*;
+	use diesel::prelude::*;
+	use ::schema::poll::dsl::*;
+	let con = &establish_connection();
+	let elem = &poll
+		.filter(id.eq(pid))
+		.load::<Poll>(con)
+		.expect("Could not load candidates!")
+		[0];
+	match elem.description {
+		Some(ref string) => string.clone(),
+		None => String::from("No Description"),
+	}
 }
 
 fn generate_header() -> String {
