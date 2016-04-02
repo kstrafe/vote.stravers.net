@@ -1,6 +1,7 @@
 use diesel;
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
+use iron::headers::{Cookie, CookiePair};
 use iron::mime::*;
 use iron::prelude::*;
 use iron::status;
@@ -35,6 +36,8 @@ fn register_answer(poll_id_val: i64, candidate_name: &str) {
 }
 
 pub fn vote_answer(req: &mut Request) -> IronResult<Response> {
+	use iron::headers::{Header, Cookie};
+
 	let parsed = req.get_ref::<UrlEncodedBody>();
 	let mut map;
 	match parsed {
@@ -47,5 +50,7 @@ pub fn vote_answer(req: &mut Request) -> IronResult<Response> {
 	println!("Updating: {}", pollid);
 	register_answer(pollid, name);
 
-	Ok(html_response("empty".into()))
+	let res = html_response("empty".into());
+	res.set_cookie("res=cook;");
+	Ok(res)
 }
