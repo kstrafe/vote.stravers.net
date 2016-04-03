@@ -20,7 +20,10 @@ use router::Router;
 fn handle(req: &mut Request) -> IronResult<Response> {
 	let cookie = req.get_cookie("hey");
 	println!("HEY!");
-	let mut resp = Response::new();
+	let mut resp = Response::with((
+		status::Ok,
+		"Hello!"
+	));
 	let mut nextval = 1i32;
 	if let Some(value) = cookie {
 		let val = &value.value;
@@ -31,10 +34,7 @@ fn handle(req: &mut Request) -> IronResult<Response> {
 	println!("{}", nextval);
 	resp.set_cookie(cookie::Cookie::new(
 		"hey".into(), nextval.to_string()));
-	Ok(Response::with((
-		status::Ok,
-		"Hello world"
-	)))
+	Ok(resp)
 }
 
 fn main() {
