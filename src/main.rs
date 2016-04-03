@@ -1,36 +1,29 @@
 #![feature(custom_attribute, custom_derive, plugin)]
-#![plugin(clippy, diesel_codegen, dotenv_macros, maud_macros)]
+#![plugin(clippy, dotenv_macros, maud_macros)]
 extern crate chrono;
-#[macro_use]
-extern crate diesel;
 extern crate dotenv;
 extern crate iron;
 extern crate maud;
+extern crate postgres;
 extern crate rand;
 extern crate router;
 extern crate urlencoded;
 
-mod index;
-mod models;
-mod routing;
-mod schema;
-
-use diesel::prelude::*;
 use iron::prelude::*;
-use self::models::*;
-use self::routing::setup_router;
+use postgres::{Connection, SslMode};
 
 fn main() {
-	use schema::posts::dsl::*;
+	use router::Router;
 
-	let con = index::establish_connection();
-
-	let res = posts
-		.limit(5)
-		.load::<Post>(&con)
-		.expect("Could not load posts");
-
-	let router = setup_router();
+	let conn = Connection::connect("postgresql://kefin@localhost/diesel_demo",
+		SslMode::None)
+		.unwrap();
+	for row in conn.query("select * from poll", &[])
+		.unwrap().iter() {
+		let x: i64 = row.get(0);
+		println!("{}", x);
+	}
+	let router = Router::new();
 
 	println!("Server started on :3000");
 
