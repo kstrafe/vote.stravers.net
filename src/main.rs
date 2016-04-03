@@ -5,18 +5,27 @@ extern crate cookie;
 extern crate dotenv;
 extern crate iron;
 extern crate maud;
+extern crate mount;
 extern crate oven;
 extern crate postgres;
 extern crate rand;
+#[macro_use]
 extern crate router;
+extern crate staticfile;
 extern crate urlencoded;
 
+mod dbcon;
+
+use dbcon::DbCon;
 use iron::{BeforeMiddleware, AfterMiddleware, typemap};
 use iron::prelude::*;
 use iron::status;
+use mount::Mount;
 use oven::prelude::*;
 use postgres::{Connection, SslMode};
 use router::Router;
+use staticfile::Static;
+use std::path::Path;
 use urlencoded::{QueryMap, UrlEncodedBody, UrlEncodedQuery};
 
 fn get<'a>(req: &'a mut Request) -> Option<&'a QueryMap> {
@@ -27,6 +36,7 @@ fn get<'a>(req: &'a mut Request) -> Option<&'a QueryMap> {
 }
 
 fn handle(req: &mut Request) -> IronResult<Response> {
+	println!("{:?}", req.url);
 	{
 		let conn = req.extensions.get::<DbCon>();
 		match conn {
@@ -69,30 +79,25 @@ fn handle(req: &mut Request) -> IronResult<Response> {
 	Ok(resp)
 }
 
-struct DbCon;
-
-impl typemap::Key for DbCon { type Value = Connection; }
-
-impl BeforeMiddleware for DbCon {
-	fn before(&self, req: &mut Request) -> IronResult<()> {
-		let conn = Connection::connect(
-			"postgresql://kefin@localhost/diesel_demo",
-			SslMode::None)
-			.unwrap();
-		req.extensions.insert::<DbCon>(conn);
-		Ok(())
-	}
-}
-
 fn main() {
+	router!(
+		get "ok" => handle
+	);
 	let router = Router::new();
 	let mut chain = iron::middleware::Chain::new(handle);
 	chain.link(oven::new(vec![]));
 	chain.link_before(DbCon);
 
-	println!("Server started on :3000");
+	let mut mount = Mount::new();
+	mount.mount("/file/", Static::new(Path::new("src/")));
+	mount.mount("/", chain);
 
-	Iron::new(chain)
-		.http("localhost:3000")
-		.unwrap();
+	match Iron::new(mount).http("localhost:3000") {
+		Ok(server) => {
+			println!("Server started: {:?}", server);
+		}
+		Err(err) => {
+			println!("Could not start the server, {:?}", err);
+		}
+	}
 }
