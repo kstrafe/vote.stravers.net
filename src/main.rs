@@ -12,9 +12,11 @@ extern crate rand;
 #[macro_use]
 extern crate router;
 extern crate staticfile;
+extern crate time;
 extern crate urlencoded;
 
 mod dbcon;
+mod response;
 
 use dbcon::DbCon;
 use iron::{BeforeMiddleware, AfterMiddleware, typemap};
@@ -27,6 +29,21 @@ use router::Router;
 use staticfile::Static;
 use std::path::Path;
 use urlencoded::{QueryMap, UrlEncodedBody, UrlEncodedQuery};
+
+pub struct User;
+
+impl typemap::Key for User { type Value = i64; }
+
+impl AfterMiddleware for User {
+	fn after(&self, req: &mut Request, mut res: Response) -> IronResult<Response> {
+		if let Some(cookie) = req.get_cookie("user") {
+
+			res.set_cookie(cookie::Cookie::new(
+				"hey".into(), "ok".to_string()));
+		}
+		Ok(res)
+	}
+}
 
 fn get<'a>(req: &'a mut Request) -> Option<&'a QueryMap> {
 	match req.get_ref::<UrlEncodedQuery>() {
@@ -80,13 +97,12 @@ fn handle(req: &mut Request) -> IronResult<Response> {
 }
 
 fn main() {
-	router!(
-		get "ok" => handle
-	);
 	let router = Router::new();
 	let mut chain = iron::middleware::Chain::new(handle);
 	chain.link(oven::new(vec![]));
+	chain.link_before(response::ResponseTime);
 	chain.link_before(DbCon);
+	chain.link_after(response::ResponseTime);
 
 	let mut mount = Mount::new();
 	mount.mount("/file/", Static::new(Path::new("src/")));
