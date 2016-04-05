@@ -4,6 +4,9 @@ extern crate chrono;
 extern crate cookie;
 extern crate dotenv;
 extern crate iron;
+#[macro_use]
+extern crate log;
+extern crate env_logger;
 extern crate maud;
 extern crate mount;
 extern crate oven;
@@ -37,7 +40,6 @@ impl typemap::Key for User { type Value = i64; }
 impl AfterMiddleware for User {
 	fn after(&self, req: &mut Request, mut res: Response) -> IronResult<Response> {
 		if let Some(cookie) = req.get_cookie("user") {
-
 			res.set_cookie(cookie::Cookie::new(
 				"hey".into(), "ok".to_string()));
 		}
@@ -47,7 +49,18 @@ impl AfterMiddleware for User {
 
 fn get<'a>(req: &'a mut Request) -> Option<&'a QueryMap> {
 	match req.get_ref::<UrlEncodedQuery>() {
-		Ok(hashmap) => Some(hashmap),
+		Ok(hashmap) => {
+			Some(hashmap)
+		}
+		Err(_) => None,
+	}
+}
+
+fn post<'a>(req: &'a mut Request) -> Option<&'a QueryMap> {
+	match req.get_ref::<UrlEncodedBody>() {
+	Ok(hashmap) => {
+		Some(hashmap)
+	}
 		Err(_) => None,
 	}
 }
@@ -97,10 +110,19 @@ fn handle(req: &mut Request) -> IronResult<Response> {
 }
 
 fn main() {
+	match env_logger::init() {
+		Ok(()) => {}
+		Err(err) => {
+			println!("Error: Logger was already started");
+			return;
+		}
+	}
+
+	info!("Setting up the middleware chain...");
 	let router = Router::new();
 	let mut chain = iron::middleware::Chain::new(handle);
-	chain.link(oven::new(vec![]));
 	chain.link_before(response::ResponseTime);
+	chain.link(oven::new(vec![]));
 	chain.link_before(DbCon);
 	chain.link_after(response::ResponseTime);
 
@@ -108,12 +130,13 @@ fn main() {
 	mount.mount("/file/", Static::new(Path::new("src/")));
 	mount.mount("/", chain);
 
+	info!("Running the server...");
 	match Iron::new(mount).http("localhost:3000") {
 		Ok(server) => {
-			println!("Server started: {:?}", server);
+			info!("Server started: {:?}", server);
 		}
 		Err(err) => {
-			println!("Could not start the server, {:?}", err);
+			error!("Could not start the server, {:?}", err);
 		}
 	}
 }
