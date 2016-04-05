@@ -42,6 +42,42 @@ impl AfterMiddleware for User {
 	}
 }
 
+fn two() {
+	use std::thread;
+	use std::sync::mpsc::channel;
+	use std::io::BufRead;
+	use std::io;
+
+	let (send, recv) = channel();
+	let stdin = io::stdin();
+	thread::spawn(move || {
+		let mut stdin = stdin.lock();
+		loop {
+			let command = {
+				let mut command = String::new();
+				match stdin.read_line(&mut command) {
+					Ok(_) => debug!("Read stdin to string"),
+					Err(err) => error!("Unable to read std: {:?}", err),
+				}
+				command
+			};
+			match send.send(command) {
+				Ok(()) => debug!("Message sent"),
+				Err(err) => error!("Unable to channel: {:?}", err),
+			}
+		}
+	});
+
+	loop {
+		use std::sync::mpsc::TryRecvError;
+		match recv.try_recv() {
+			Ok(message) => trace!("Gotten message {}", message),
+			Err(TryRecvError::Empty) => {}
+			Err(TryRecvError::Disconnected) => error!("Sender dc'd"),
+		}
+	}
+}
+
 fn main() {
 	match env_logger::init() {
 		Ok(()) => {}
@@ -50,6 +86,8 @@ fn main() {
 			return;
 		}
 	}
+
+	two();
 
 	let handler = setup_chain::get_middleware();
 
