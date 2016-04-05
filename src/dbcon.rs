@@ -1,5 +1,6 @@
 use iron::{BeforeMiddleware, typemap};
 use iron::prelude::*;
+use iron::status;
 use postgres::{Connection, SslMode};
 
 pub struct DbCon;
@@ -16,6 +17,10 @@ impl BeforeMiddleware for DbCon {
 			}
 			Err(err) => {
 				error!("Could not connect to database: {:?}", err);
+				return Err(IronError::new (
+					err,
+					((status::InternalServerError, "Unable to connect to database, check the logs"))
+				));
 			}
 		}
 		Ok(())
