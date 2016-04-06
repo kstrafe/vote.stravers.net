@@ -3,8 +3,13 @@ pub fn render() -> String {
 	html! {
 		buffer,
 		html {
+			head {
+				link rel="stylesheet" type="text/css" href="file/reset.css" /
+				link rel="stylesheet" type="text/css" href="file/style.css" /
+			}
 			body {
-				p "Oatmeal"
+				div class="fullscreen yellow" {}
+				div class="fullscreen green" {}
 			}
 		}
 	};

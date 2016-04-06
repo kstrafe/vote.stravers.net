@@ -4,6 +4,7 @@ extern crate chrono;
 extern crate cookie;
 extern crate dotenv;
 extern crate iron;
+extern crate iron_login;
 #[macro_use]
 extern crate log;
 extern crate env_logger;
@@ -20,20 +21,20 @@ extern crate urlencoded;
 
 mod controllers;
 mod middleware;
-mod setup_chain;
 
 use iron::prelude::*;
+use middleware::get_middleware;
 
 fn main() {
 	match env_logger::init() {
 		Ok(()) => {}
 		Err(_) => {
-			println!("Error: Logger was already started");
+			println!("Error: Logger was already started, aborting process");
 			return;
 		}
 	}
 
-	let handler = setup_chain::get_middleware();
+	let handler = get_middleware();
 
 	info!("Running the server...");
 	match Iron::new(handler).http("localhost:3000") {

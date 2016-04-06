@@ -1,3 +1,3 @@
 all:
 	cargo build
-	./target/debug/ironweb
+	RUST_LOG=ironweb=trace ./target/debug/ironweb
