@@ -7,6 +7,7 @@ use super::views::render;
 use middleware::DbCon;
 
 pub fn index(req: &mut Request) -> IronResult<Response> {
+	// This must be put inside a model!
 	{
 		let conn = req.extensions.get::<DbCon>();
 		match conn {
@@ -29,6 +30,7 @@ pub fn index(req: &mut Request) -> IronResult<Response> {
 		}
 	}
 
+	// This too inside a model
 	let cookie = req.get_cookie("hey");
 	let mut resp = Response::with((
 		status::Ok,

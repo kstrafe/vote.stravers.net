@@ -66,6 +66,7 @@ impl AfterMiddleware for Html {
 }
 
 
+/// Put around the chain to get and report the response time
 pub struct ResponseTime;
 
 impl typemap::Key for ResponseTime { type Value = u64; }
