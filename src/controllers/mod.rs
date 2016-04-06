@@ -4,6 +4,7 @@ pub mod index;
 use iron::prelude::*;
 use urlencoded::{QueryMap, UrlEncodedBody, UrlEncodedQuery};
 
+#[allow(dead_code)]
 pub fn get<'a>(req: &'a mut Request) -> Option<&'a QueryMap> {
 	debug!("Fetching GET parameters");
 	match req.get_ref::<UrlEncodedQuery>() {
@@ -18,6 +19,7 @@ pub fn get<'a>(req: &'a mut Request) -> Option<&'a QueryMap> {
 	}
 }
 
+#[allow(dead_code)]
 pub fn post<'a>(req: &'a mut Request) -> Option<&'a QueryMap> {
 	debug!("Fetching POST parameters");
 	match req.get_ref::<UrlEncodedBody>() {

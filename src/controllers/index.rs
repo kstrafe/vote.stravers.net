@@ -3,14 +3,10 @@ use iron::status;
 use cookie;
 use oven::RequestExt;
 use oven::ResponseExt;
-use super::*;
 use super::views::render;
-use iron::mime::*;
-use iron::modifier::Modifier;
 use middleware::DbCon;
 
 pub fn index(req: &mut Request) -> IronResult<Response> {
-	println!("{:?}", req.url);
 	{
 		let conn = req.extensions.get::<DbCon>();
 		match conn {
@@ -34,7 +30,6 @@ pub fn index(req: &mut Request) -> IronResult<Response> {
 	}
 
 	let cookie = req.get_cookie("hey");
-	println!("HEY!");
 	let mut resp = Response::with((
 		status::Ok,
 		render(),

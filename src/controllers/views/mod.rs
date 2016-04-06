@@ -1,6 +1,6 @@
 pub fn render() -> String {
 	let mut buffer = String::new();
-	html! {
+	match html! {
 		buffer,
 		html {
 			head {
@@ -12,6 +12,9 @@ pub fn render() -> String {
 				div class="fullscreen green" {}
 			}
 		}
-	};
+	} {
+		Ok(()) => trace!("Generated Html"),
+		Err(err) => error!("Unable to parse Html: {:?}", err),
+	}
 	buffer
 }

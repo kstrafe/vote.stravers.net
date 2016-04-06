@@ -4,7 +4,6 @@ extern crate chrono;
 extern crate cookie;
 extern crate dotenv;
 extern crate iron;
-extern crate iron_login;
 #[macro_use]
 extern crate log;
 extern crate env_logger;

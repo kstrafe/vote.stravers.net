@@ -1,11 +1,9 @@
 use iron::mime::*;
 use iron::modifier::Modifier;
-use oven::{RequestExt, ResponseExt};
 use iron::{AfterMiddleware, BeforeMiddleware, typemap};
 use iron::status;
 use time::precise_time_ns;
 use postgres::{Connection, SslMode};
-use cookie;
 use iron::prelude::*;
 use mount::Mount;
 use controllers;
@@ -60,7 +58,7 @@ pub struct Html;
 
 /// Ensures that the response will have a mime type that is Html
 impl AfterMiddleware for Html {
-	fn after(&self, req: &mut Request, mut res: Response) -> IronResult<Response> {
+	fn after(&self, _: &mut Request, mut res: Response) -> IronResult<Response> {
 		trace!("Setting MIME type to html");
 		(Mime(TopLevel::Text, SubLevel::Html, vec![])).modify(&mut res);
 		Ok(res)
