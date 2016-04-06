@@ -1,3 +1,4 @@
+pub mod views;
 pub mod index;
 
 use iron::prelude::*;
