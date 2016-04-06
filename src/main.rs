@@ -112,13 +112,36 @@ fn two() {
 		}
 	});
 
+	macro_rules! register_live {
+		($left:expr, $right:expr => $name:ident) => {
+			if $left == stringify!($name) {
+				$name = $right.into();
+			}
+			debug!("The string is {}", $name);
+		}
+	}
+
+	let mut fps = String::from("30");
+
 	loop {
 		use std::sync::mpsc::TryRecvError;
 		match recv.try_recv() {
-			Ok(message) => trace!("Gotten message {:?}", message),
+			Ok(message) => {
+				trace!("Gotten message {:?}", message);
+				match message {
+					CommandType::Empty => {}
+					CommandType::Get(string) => {
+					}
+					CommandType::Set(left, right) => {
+						register_live!(left, right => fps);
+					}
+				}
+			}
 			Err(TryRecvError::Empty) => {}
 			Err(TryRecvError::Disconnected) => error!("Sender dc'd"),
 		}
+		std::thread::sleep(std::time::Duration::new(3, 0));
+		debug!("fps: {}", fps);
 	}
 }
 
