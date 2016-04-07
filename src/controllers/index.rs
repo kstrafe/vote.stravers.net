@@ -5,32 +5,10 @@ use oven::RequestExt;
 use oven::ResponseExt;
 use super::views::render;
 use middleware::DbCon;
+use super::models::create_poll;
 
 pub fn index(req: &mut Request) -> IronResult<Response> {
-	// This must be put inside a model!
-	{
-		let conn = req.extensions.get::<DbCon>();
-		match conn {
-			Some(ref conn) => {
-				match conn.query("select * from poll", &[]) {
-					Ok(ref rows) => {
-						for row in rows.iter() {
-							let x: i64 = row.get(0);
-							trace!("{}", x);
-						}
-					}
-					Err(err) => {
-						error!("Db error: {:?}", err);
-					}
-				}
-			}
-			None => {
-				error!("Could not open connection!");
-			}
-		}
-	}
-
-	// This too inside a model
+	create_poll(req);
 	let cookie = req.get_cookie("hey");
 	let mut resp = Response::with((
 		status::Ok,

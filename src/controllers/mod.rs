@@ -1,5 +1,6 @@
-pub mod views;
 pub mod index;
+pub mod models;
+pub mod views;
 
 use iron::prelude::*;
 use urlencoded::{QueryMap, UrlEncodedBody, UrlEncodedQuery};

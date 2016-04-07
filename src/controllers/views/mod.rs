@@ -1,5 +1,3 @@
-use maud::PreEscaped;
-
 pub fn render() -> String {
 	let mut buffer = String::new();
 	match html! {
@@ -11,19 +9,15 @@ pub fn render() -> String {
 				link rel="stylesheet" type="text/css" href="file/style.css" /
 			}
 			body {
-				div class="fullscreen navy" {
+				div class="fullscreen bg-navy" {
 					div class="center" {
 						h1 class="welcome" id="welcome" {
 							"Welcome!"
 						}
 					}
 				}
-				div class="fullscreen green" {}
-			}
-			script {
-				^PreEscaped(r#"
-					$('#welcome').fadeTo(1000, 1.0);
-				"#)
+				div class="fullscreen bg-green" {}
+				script type="text/javascript" src="file/script.js" {}
 			}
 		}
 	} {

@@ -1,7 +1,0 @@
-.fullscreen { height: 100vh; }
-.yellow { background-color: #FFDC00; }
-.navy { background-color: #001F3F; }
-.green { background-color: #2ECC40; }
-.center { left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); }
-h1 { font-size: 3em; }
-.welcome { color: rgb(170, 170, 170); opacity: 0.0; }

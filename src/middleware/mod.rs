@@ -13,17 +13,17 @@ use staticfile::Static;
 
 pub fn get_middleware() -> Mount {
 	info!("Setting up the middleware chain...");
-	let mut chain = Chain::new(controllers::index::index);
-	chain.link_before(ResponseTime);
-	chain.link(oven::new(vec![]));
-	chain.link_before(DbCon);
-	chain.link_after(Html);
-	chain.link_after(ResponseTime);
+	let mut html = Chain::new(controllers::index::index);
+	html.link_before(ResponseTime);
+	html.link(oven::new(vec![]));
+	html.link_before(DbCon);
+	html.link_after(Html);
+	html.link_after(ResponseTime);
 
 	info!("Setting up the mounts");
 	let mut mount = Mount::new();
-	mount.mount("/", chain);
-	mount.mount("/file/", Static::new(Path::new("src/")));
+	mount.mount("/", html);
+	mount.mount("/file/", Static::new(Path::new("file/")));
 	mount
 }
 
@@ -67,7 +67,7 @@ impl AfterMiddleware for Html {
 
 
 /// Put around the chain to get and report the response time
-pub struct ResponseTime;
+struct ResponseTime;
 
 impl typemap::Key for ResponseTime { type Value = u64; }
 
