@@ -4,7 +4,6 @@ use cookie;
 use oven::RequestExt;
 use oven::ResponseExt;
 use super::views::render;
-use middleware::DbCon;
 use super::models::create_poll;
 
 pub fn index(req: &mut Request) -> IronResult<Response> {
