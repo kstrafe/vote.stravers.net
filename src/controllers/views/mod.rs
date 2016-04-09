@@ -4,20 +4,30 @@ pub fn render() -> String {
 		buffer,
 		html {
 			head {
-				script type="text/javascript" src="file/jquery-2.2.3.min.js" {}
+				meta charset="utf-8" /
 				link rel="stylesheet" type="text/css" href="file/reset.css" /
-				link rel="stylesheet" type="text/css" href="file/style.css" /
+				link rel="stylesheet" type="text/css" href="file/css/foundation.css" /
+				script type="text/javascript" src="file/jquery-2.2.3.min.js" {}
+				title {
+					"Rust on Iron"
+				}
 			}
 			body {
-				div class="fullscreen bg-navy" {
-					div class="center" {
-						h1 class="welcome" id="welcome" {
-							"Welcome!"
-						}
+				h1 { "Hello world!" }
+				div class="row" {
+					div class="small-2 columns" {
+						"Hey!"
+					}
+					div class="small-2 columns" {
+						"There"
 					}
 				}
-				div class="fullscreen bg-green" {}
-				script type="text/javascript" src="file/script.js" {}
+				script src="file/js/vendor/jquery.min.js" {}
+				script src="file/js/vendor/what-input.min.js" {}
+				script src="file/js/foundation.min.js" {}
+				script {
+					"$(document).foundation();"
+				}
 			}
 		}
 	} {
