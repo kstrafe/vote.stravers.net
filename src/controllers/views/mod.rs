@@ -13,14 +13,46 @@ pub fn render() -> String {
 				}
 			}
 			body {
+				div class="top-bar" {
+					div class="top-bar-left" {
+						ul class="menu" {
+							li class="menu-text" { "Hello!" }
+							li { "Oy!" }
+							li { a href="#" { "Test" }}
+							li { a href="#" { "Test2" }}
+						}
+					}
+					div class="top-bar-right" {
+						ul class="menu" {
+							li { input type="search" placeholder="Search" {}}
+							li { button type="button" class="button" { "Search" }}
+						}
+					}
+				}
 				h1 { "Hello world!" }
 				div class="row" {
-					div class="small-2 columns" {
+					div class="small-2 large-4 columns" {
 						"Hey!"
 					}
-					div class="small-2 columns" {
+					div class="small-4 large-4 columns" {
 						"There"
 					}
+					div class="small-6 large-4 columns" {
+						"There"
+					}
+				}
+				div class="row" {
+					button type="button" class="success button" { "Save" }
+					button type="button" class="alert button" { "Delete" }
+				}
+				ul class="menu" {
+					li { a href="#" { "One" }}
+					li { a href="#" { "On4" }}
+					li { a href="#" { "On5" }}
+					li { a href="#" { "On6" }}
+					li { a href="#" { "On7" }}
+					li { a href="#" { "On8" }}
+					li { a href="#" { "Tow" }}
 				}
 				script src="file/js/vendor/jquery.min.js" {}
 				script src="file/js/vendor/what-input.min.js" {}
