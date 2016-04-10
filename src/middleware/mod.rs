@@ -17,13 +17,18 @@ pub fn get_middleware() -> Mount {
 	html.link_before(ResponseTime);
 	html.link(oven::new(vec![]));
 	html.link_before(DbCon);
+	html.link_after(WrapUp);
 	html.link_after(Html);
 	html.link_after(ResponseTime);
+
+	let mut error = Chain::new(controllers::index::not_found);
+	error.link_after(Html);
 
 	info!("Setting up the mounts");
 	let mut mount = Mount::new();
 	mount.mount("/", html);
 	mount.mount("/file/", Static::new(Path::new("file/")));
+	mount.mount("/error/", error);
 	mount
 }
 
@@ -61,6 +66,24 @@ impl AfterMiddleware for Html {
 	fn after(&self, _: &mut Request, mut res: Response) -> IronResult<Response> {
 		trace!("Setting MIME type to html");
 		(Mime(TopLevel::Text, SubLevel::Html, vec![])).modify(&mut res);
+		Ok(res)
+	}
+}
+
+
+pub struct Body;
+
+impl typemap::Key for Body { type Value = String; }
+
+
+pub struct WrapUp;
+
+impl AfterMiddleware for WrapUp {
+	fn after(&self, req: &mut Request, res: Response) -> IronResult<Response> {
+		match req.extensions.get::<Body>() {
+			Some(string) => debug!("Got string!: {}", string),
+			None => error!("Nothing got in WrapUp :("),
+		}
 		Ok(res)
 	}
 }

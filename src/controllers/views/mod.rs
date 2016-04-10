@@ -1,3 +1,5 @@
+use maud::PreEscaped;
+
 pub fn render() -> String {
 	let mut buffer = String::new();
 	match html! {
@@ -59,6 +61,33 @@ pub fn render() -> String {
 				script src="file/js/foundation.min.js" {}
 				script {
 					"$(document).foundation();"
+				}
+			}
+		}
+	} {
+		Ok(()) => trace!("Generated Html"),
+		Err(err) => error!("Unable to parse Html: {:?}", err),
+	}
+	buffer
+}
+
+pub fn render_not_found() -> String {
+	let mut buffer = String::new();
+	match html! {
+		buffer,
+		html {
+			head {
+				title {
+					"Error"
+				}
+				style {
+					^PreEscaped(".middle { margin-top: 50%; translate: transform(0, -50%); }")
+					^PreEscaped("html { height: 100vh; text-align: center; vertical-align: middle; width: 100vw; }")
+				}
+			}
+			body {
+				h1 class="middle" {
+					"Currently under maintenance, check back later :("
 				}
 			}
 		}
