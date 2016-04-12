@@ -8,12 +8,11 @@ use super::models::create_poll;
 use middleware::Body;
 
 pub fn index(req: &mut Request) -> IronResult<Response> {
-	req.extensions.insert::<Body>("Hello!".into());
+	req.extensions.insert::<Body>(render().into());
 	create_poll(req);
 	let cookie = req.get_cookie("hey");
 	let mut resp = Response::with((
-		status::Ok,
-		render(),
+		status::Ok
 	));
 	let mut nextval = 1i32;
 	if let Some(value) = cookie {

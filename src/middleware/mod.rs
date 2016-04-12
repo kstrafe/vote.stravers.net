@@ -82,7 +82,6 @@ impl AfterMiddleware for WrapUp {
 	fn after(&self, req: &mut Request, mut res: Response) -> IronResult<Response> {
 		match req.extensions.get::<Body>() {
 			Some(string) => {
-				debug!("Got string!: {}", string);
 				res.set_mut(string.clone());
 			}
 			None => error!("Nothing got in WrapUp :("),
