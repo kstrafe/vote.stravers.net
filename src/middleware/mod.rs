@@ -79,9 +79,12 @@ impl typemap::Key for Body { type Value = String; }
 pub struct WrapUp;
 
 impl AfterMiddleware for WrapUp {
-	fn after(&self, req: &mut Request, res: Response) -> IronResult<Response> {
+	fn after(&self, req: &mut Request, mut res: Response) -> IronResult<Response> {
 		match req.extensions.get::<Body>() {
-			Some(string) => debug!("Got string!: {}", string),
+			Some(string) => {
+				debug!("Got string!: {}", string);
+				res.set_mut(string.clone());
+			}
 			None => error!("Nothing got in WrapUp :("),
 		}
 		Ok(res)
