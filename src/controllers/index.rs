@@ -8,7 +8,7 @@ use super::models::create_poll;
 use middleware::Body;
 
 pub fn index(req: &mut Request) -> IronResult<Response> {
-	req.extensions.insert::<Body>(render().into());
+	req.extensions.insert::<Body>(render());
 	create_poll(req);
 	let cookie = req.get_cookie("hey");
 	let mut resp = Response::with((
@@ -26,9 +26,19 @@ pub fn index(req: &mut Request) -> IronResult<Response> {
 	Ok(resp)
 }
 
+trait SetA {
+	fn set_title(&mut self, title: &str);
+}
+
+impl SetA for Response {
+	fn set_title(&mut self, title: &str) {
+		self.extensions.insert::<Body>(title.into());
+	}
+}
+
 pub fn not_found(req: &mut Request) -> IronResult<Response> {
+	req.extensions.insert::<Body>(render_not_found());
 	Ok(Response::with((
-		status::Ok,
-		render_not_found()
+		status::Ok
 	)))
 }
