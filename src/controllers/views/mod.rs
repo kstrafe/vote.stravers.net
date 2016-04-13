@@ -76,18 +76,22 @@ pub fn render_not_found() -> String {
 	match html! {
 		buffer,
 		html {
+			^PreEscaped("<!DOCTYPE html>")
 			head {
 				title {
 					"Error"
 				}
 				style {
-					^PreEscaped(".middle { margin-top: 50%; translate: transform(0, -50%); }")
-					^PreEscaped("html { height: 100vh; text-align: center; vertical-align: middle; width: 100vw; }")
+					^PreEscaped("body { margin: 0; }")
+					^PreEscaped(".text { color: #AAAAAA; position: absolute; transform: translate(0, -50%); top: 50%; width: 100vw; }")
+					^PreEscaped("html { background-color: #001F3F; height: 100vh; text-align: center; vertical-align: middle; width: 100vw; }")
 				}
 			}
 			body {
-				h1 class="middle" {
-					"Currently under maintenance, check back later :("
+				div class="text" {
+					h1 {
+						"Currently under maintenance, check back later :("
+					}
 				}
 			}
 		}
