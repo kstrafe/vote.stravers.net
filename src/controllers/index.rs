@@ -8,8 +8,10 @@ use super::models::create_poll;
 use middleware::Body;
 
 pub fn index(req: &mut Request) -> IronResult<Response> {
-	req.extensions.insert::<Body>(render());
-	create_poll(req);
+	trace!("Index page");
+	req.set_body(&render());
+	req.set_title("Hello");
+	// create_poll(req);
 	let cookie = req.get_cookie("hey");
 	let mut resp = Response::with((
 		status::Ok
@@ -28,16 +30,21 @@ pub fn index(req: &mut Request) -> IronResult<Response> {
 
 trait SetA {
 	fn set_title(&mut self, title: &str);
+	fn set_body(&mut self, body: &str);
 }
 
-impl SetA for Response {
+impl<'a, 'b> SetA for Request<'a, 'b> {
 	fn set_title(&mut self, title: &str) {
 		self.extensions.insert::<Body>(title.into());
+	}
+	fn set_body(&mut self, body: &str) {
+		self.extensions.insert::<Body>(body.into());
 	}
 }
 
 pub fn not_found(req: &mut Request) -> IronResult<Response> {
-	req.extensions.insert::<Body>(render_not_found());
+	trace!("Not found");
+	req.set_body(&render_not_found());
 	Ok(Response::with((
 		status::Ok
 	)))

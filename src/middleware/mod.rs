@@ -22,6 +22,7 @@ pub fn get_middleware() -> Mount {
 	html.link_after(ResponseTime);
 
 	let mut error = Chain::new(controllers::index::not_found);
+	error.link_after(WrapUp);
 	error.link_after(Html);
 
 	info!("Setting up the mounts");
@@ -71,11 +72,17 @@ impl AfterMiddleware for Html {
 }
 
 
+/// Key name for storing the page's title
+/// I think a page
+
+/// Key name for storing the html body (without body tags)
+/// This allows for composing body elements.
 pub struct Body;
 
 impl typemap::Key for Body { type Value = String; }
 
 
+/// Paste the body together with some other html and to create a completed html doc
 pub struct WrapUp;
 
 impl AfterMiddleware for WrapUp {
@@ -109,7 +116,7 @@ impl AfterMiddleware for ResponseTime {
 		match req.extensions.get::<ResponseTime>() {
 			Some(&time) => {
 				let change = precise_time_ns() - time;
-				debug!("dt: {} ms", (change as f64) / 1_000_000.0);
+				debug!("dt = \"{} ms\"", (change as f64) / 1_000_000.0);
 			}
 			None => {
 				error!("Linked in ResponseTime AfterMiddleware without the BeforeMiddleware");
@@ -118,4 +125,3 @@ impl AfterMiddleware for ResponseTime {
 		Ok(res)
 	}
 }
-
