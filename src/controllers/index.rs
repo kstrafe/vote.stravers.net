@@ -23,8 +23,6 @@ pub fn index(req: &mut Request) -> IronResult<Response> {
 			nextval += val;
 		}
 	}
-	resp.set_cookie(cookie::Cookie::new(
-		"hey".into(), nextval.to_string()));
 	Ok(resp)
 }
 
