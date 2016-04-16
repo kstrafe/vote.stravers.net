@@ -7,6 +7,48 @@ use super::views::{render, render_not_found};
 use super::models::create_poll;
 use middleware::Body;
 
+/**
+	Idea for a new XML-like tree language:
+	TOML without [tag."øther_tag"].
+
+	[languages] {
+		[toml]
+		major = 0
+		minor = 4
+		patch = 0
+		[yaml]
+		major = 1
+		minor = 2
+		patch = 0
+	}
+
+	[languages.toml]
+	major = 0
+	minor = 4
+	patch = 0
+	[languages.yaml]
+	major = 1
+	minor = 2
+	patch = 0
+
+	[[languages]]
+	name = "toml"
+	major = 0
+	minor = 4
+	patch = 0
+	[[languages]]
+	name = "yaml"
+	major = 1
+	minor = 2
+	patch = 0
+
+	<body>
+		<a href="#"> ABC </a>
+		<div></div>
+		<a href="#"> DEF </a>
+	</body>
+*/
+
 pub fn index(req: &mut Request) -> IronResult<Response> {
 	trace!("Index page");
 	req.set_body(&render());
