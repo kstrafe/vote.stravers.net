@@ -10,43 +10,38 @@ use middleware::Body;
 /**
 	Idea for a new XML-like tree language:
 	TOML without [tag."øther_tag"].
+	TOML isn't nest-friendly. I kinda like Maud tho:
 
-	[languages] {
-		[toml]
-		major = 0
-		minor = 4
-		patch = 0
-		[yaml]
-		major = 1
-		minor = 2
-		patch = 0
+	body {
+		a href="#" { ABC }
+		div {}
+		a href="#" { DEF }
 	}
-
-	[languages.toml]
-	major = 0
-	minor = 4
-	patch = 0
-	[languages.yaml]
-	major = 1
-	minor = 2
-	patch = 0
-
-	[[languages]]
-	name = "toml"
-	major = 0
-	minor = 4
-	patch = 0
-	[[languages]]
-	name = "yaml"
-	major = 1
-	minor = 2
-	patch = 0
 
 	<body>
 		<a href="#"> ABC </a>
 		<div></div>
 		<a href="#"> DEF </a>
 	</body>
+
+	servers {
+		alpha {
+			name = "cool"
+			ip = "123.44.43.32"
+		} beta {
+			name = "cool2"
+			ip = "123.44.43.31"
+		}
+	}
+
+	[servers]
+		[servers.alpha]
+		name = "cool"
+		ip = "123.44.43.32"
+		[severs.beta]
+		name = "cool2"
+		ip = "123.44.43.31"
+
 */
 
 pub fn index(req: &mut Request) -> IronResult<Response> {
